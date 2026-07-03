@@ -5,7 +5,7 @@ import {
   getRecentFlips,
   getWalletStreak,
 } from "../services/flipService.js";
-import type { CreateFlipRequest } from "../../../shared/types.js";
+import type { CreateFlipRequest } from "../types.js";
 
 const flips = new Hono();
 

@@ -1,12 +1,14 @@
 services:
   - type: web
     name: degen-coin-flip-api
-    env: node
-    buildCommand: npm install && npm run build
+    runtime: node
+    rootDir: server
+    buildCommand: cd .. && npm install && npm run build -w server
     startCommand: npm start
     envVars:
       - key: PORT
         value: 10000
       - key: CORS_ORIGIN
+        sync: false
       - key: HOUSE_EDGE
-        value: 0.035
+        value: "0.035"

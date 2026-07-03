@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import type { FlipRecord, FlipSide, StatsResponse } from "../../../shared/types.js";
+import type { FlipRecord, FlipSide, StatsResponse } from "../types.js";
 
 const MAX_FLIPS = 500;
 

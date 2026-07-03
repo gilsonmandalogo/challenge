@@ -5,3 +5,5 @@ dist/
 *.log
 .DS_Store
 .vercel
+shared/*.js
+shared/*.d.ts

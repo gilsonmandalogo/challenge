@@ -2,7 +2,7 @@ import type {
   CreateFlipRequest,
   CreateFlipResponse,
   FlipRecord,
-} from "../../../shared/types.js";
+} from "../types.js";
 import { generateId, hashSeed, randomSide, store } from "../store/memoryStore.js";
 
 const MIN_BET = 0.01;
