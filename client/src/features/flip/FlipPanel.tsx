@@ -44,6 +44,9 @@ export function FlipPanel() {
       dispatch({ type: "SUBMITTED", flipId: "pending" });
       dispatch({ type: "CONFIRMING" });
 
+      // Simulate block confirmation on client (server returns instantly on serverless)
+      await new Promise((r) => setTimeout(r, 1200));
+
       const result = await api.createFlip({
         wallet: address,
         side: selectedSide,

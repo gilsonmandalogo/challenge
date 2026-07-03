@@ -65,10 +65,6 @@ export async function createFlip(
   store.add(pending);
   pendingSeeds.set(id, serverSeed);
 
-  await delay(CONFIRM_DELAY_MS);
-
-  pendingSeeds.delete(id);
-
   const confirmed: FlipRecord = {
     ...pending,
     status: "confirmed",
@@ -77,6 +73,7 @@ export async function createFlip(
   };
 
   store.update(id, confirmed);
+  pendingSeeds.delete(id);
   return confirmed;
 }
 
