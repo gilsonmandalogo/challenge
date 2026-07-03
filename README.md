@@ -9,7 +9,7 @@ An improved, portfolio-quality demo inspired by [Degen Coin Flip](https://degenc
 | **Frontend** | https://client-six-mocha-33.vercel.app |
 | **Backend API** | https://server-delta-tan-43.vercel.app |
 
-> **Note:** The API is deployed as Vercel serverless functions. A [Render](https://render.com) config is also included in `server/render.yaml` for alternative deployment. Render free tier spins down after inactivity (30–60s cold start).
+> **Note:** The API is deployed as Vercel serverless functions. Recent flips/stats are stored in-memory per instance and may reset on cold starts. A [Render](https://render.com) config (`server/render.yaml`) is included for a persistent Node process alternative.
 
 ## What We Built
 
