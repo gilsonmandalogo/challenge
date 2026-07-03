@@ -11,7 +11,7 @@ An improved, portfolio-quality demo inspired by [Degen Coin Flip](https://degenc
 
 > **Note:** Because there are no real persistence, recent flips and stats ("Flips Recorded") are accumulated in a **client-side session store** and merged with API poll results, so counts won't drop when serverless instances rotate. The API runs on Vercel serverless.
 
-## What We Built
+## What Was Built
 
 - **Coin flip game flow** — pick heads/tails, set a SOL bet, flip, and see win/loss with payout
 - **Mock wallet UX** — connect/disconnect, fake pubkey, 10 SOL demo balance
