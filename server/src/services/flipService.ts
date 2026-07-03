@@ -1,6 +1,5 @@
 import type {
   CreateFlipRequest,
-  CreateFlipResponse,
   FlipRecord,
 } from "../types.js";
 import { generateId, hashSeed, randomSide, store } from "../store/memoryStore.js";
@@ -8,6 +7,11 @@ import { generateId, hashSeed, randomSide, store } from "../store/memoryStore.js
 const MIN_BET = 0.01;
 const MAX_BET = 100;
 const CONFIRM_DELAY_MS = 1500;
+const pendingSeeds = new Map<string, string>();
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function getHouseEdge(): number {
   const edge = parseFloat(process.env.HOUSE_EDGE ?? "0.035");
@@ -30,7 +34,9 @@ function validateRequest(req: CreateFlipRequest): string | null {
   return null;
 }
 
-export async function createFlip(req: CreateFlipRequest): Promise<CreateFlipResponse | { error: string }> {
+export async function createFlip(
+  req: CreateFlipRequest
+): Promise<FlipRecord | { error: string }> {
   const validationError = validateRequest(req);
   if (validationError) return { error: validationError };
 
@@ -42,7 +48,7 @@ export async function createFlip(req: CreateFlipRequest): Promise<CreateFlipResp
   const houseEdge = getHouseEdge();
   const payout = won ? req.amount * 2 * (1 - houseEdge) : 0;
 
-  const flip: FlipRecord = {
+  const pending: FlipRecord = {
     id,
     wallet: req.wallet,
     side: req.side,
@@ -56,21 +62,43 @@ export async function createFlip(req: CreateFlipRequest): Promise<CreateFlipResp
     fairness: { serverSeedHash },
   };
 
-  store.add(flip);
+  store.add(pending);
+  pendingSeeds.set(id, serverSeed);
 
-  setTimeout(() => {
-    store.update(id, {
-      status: "confirmed",
-      confirmedAt: new Date().toISOString(),
-      fairness: { serverSeedHash, serverSeed },
-    });
-  }, CONFIRM_DELAY_MS);
+  await delay(CONFIRM_DELAY_MS);
 
-  return { id, status: "pending" };
+  pendingSeeds.delete(id);
+
+  const confirmed: FlipRecord = {
+    ...pending,
+    status: "confirmed",
+    confirmedAt: new Date().toISOString(),
+    fairness: { serverSeedHash, serverSeed },
+  };
+
+  store.update(id, confirmed);
+  return confirmed;
 }
 
 export function getFlip(id: string): FlipRecord | undefined {
-  return store.getById(id);
+  const flip = store.getById(id);
+  if (!flip || flip.status !== "pending") return flip;
+
+  const elapsed = Date.now() - new Date(flip.createdAt).getTime();
+  if (elapsed >= CONFIRM_DELAY_MS) {
+    const serverSeed = pendingSeeds.get(id);
+    pendingSeeds.delete(id);
+    return store.update(id, {
+      status: "confirmed",
+      confirmedAt: new Date().toISOString(),
+      fairness: {
+        serverSeedHash: flip.fairness.serverSeedHash,
+        serverSeed,
+      },
+    });
+  }
+
+  return flip;
 }
 
 export function getRecentFlips(limit: number): FlipRecord[] {

@@ -1,4 +1,4 @@
-import type { FlipRecord, FlipSide } from "@shared/types";
+import type { FlipRecord, FlipSide } from "../types";
 
 export type FlipPhase =
   | "idle"

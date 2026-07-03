@@ -1,8 +1,8 @@
 import { useReducer, useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { FlipSide } from "@shared/types";
+import type { FlipSide } from "../../types";
 import { api } from "../../lib/api";
-import { simulateSigning, pollUntilConfirmed } from "../../lib/mockTx";
+import { simulateSigning } from "../../lib/mockTx";
 import { useWalletStore } from "../../state/walletStore";
 import {
   flipReducer,
@@ -41,15 +41,15 @@ export function FlipPanel() {
       const mockTxSignature = await simulateSigning();
       dispatch({ type: "SIGNED", mockTxSignature });
 
-      const { id } = await api.createFlip({
+      dispatch({ type: "SUBMITTED", flipId: "pending" });
+      dispatch({ type: "CONFIRMING" });
+
+      const result = await api.createFlip({
         wallet: address,
         side: selectedSide,
         amount,
         mockTxSignature,
       });
-      dispatch({ type: "SUBMITTED", flipId: id });
-
-      const result = await pollUntilConfirmed(() => api.getFlip(id));
 
       if (result.status === "confirmed") {
         if (result.won) {

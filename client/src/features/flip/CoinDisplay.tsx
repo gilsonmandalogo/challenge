@@ -1,5 +1,5 @@
 import type { FlipPhase } from "../../state/flipMachine";
-import type { FlipSide } from "@shared/types";
+import type { FlipSide } from "../../types";
 
 interface CoinDisplayProps {
   phase: FlipPhase;

@@ -6,10 +6,10 @@ An improved, portfolio-quality demo inspired by [Degen Coin Flip](https://degenc
 
 | Service | URL |
 |---------|-----|
-| Frontend (Vercel) | _See deployment section below_ |
-| Backend API (Render) | _See deployment section below_ |
+| **Frontend** | https://client-six-mocha-33.vercel.app |
+| **Backend API** | https://server-delta-tan-43.vercel.app |
 
-> **Note:** The Render free tier spins down after inactivity. First request may take 30–60 seconds to wake up.
+> **Note:** The API is deployed as Vercel serverless functions. A [Render](https://render.com) config is also included in `server/render.yaml` for alternative deployment. Render free tier spins down after inactivity (30–60s cold start).
 
 ## What We Built
 
@@ -27,7 +27,7 @@ An improved, portfolio-quality demo inspired by [Degen Coin Flip](https://degenc
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, TanStack Query |
 | Backend | Hono, Node.js, TypeScript |
 | Shared | Typed API contract in `shared/types.ts` |
-| Deploy | Vercel (client) + Render (server) |
+| Deploy | Vercel (client + serverless API); Render config included as alternative |
 
 ## Architecture
 
@@ -122,7 +122,15 @@ All architecture decisions, state management patterns, and API boundaries were g
 
 ## Deployment
 
-### Backend (Render)
+### Backend (Vercel Serverless — live)
+
+The API is deployed at https://server-delta-tan-43.vercel.app using the Hono Vercel adapter (`server/api/index.ts`).
+
+Environment variables on the Vercel server project:
+- `CORS_ORIGIN` = your frontend URL (e.g. `https://client-six-mocha-33.vercel.app`)
+- `HOUSE_EDGE` = `0.035` (optional)
+
+### Backend (Render — alternative)
 
 1. Create a new **Web Service** on [Render](https://render.com)
 2. Connect the GitHub repo, set **Root Directory** to `server`

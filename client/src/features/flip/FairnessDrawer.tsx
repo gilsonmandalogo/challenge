@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FlipRecord } from "@shared/types";
+import type { FlipRecord } from "../../types";
 
 interface FairnessDrawerProps {
   result: FlipRecord | null;

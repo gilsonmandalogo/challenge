@@ -9,10 +9,7 @@ export type CreateFlipRequest = {
   mockTxSignature: string;
 };
 
-export type CreateFlipResponse = {
-  id: string;
-  status: FlipStatus;
-};
+export type CreateFlipResponse = FlipRecord;
 
 export type FlipRecord = {
   id: string;

@@ -4,7 +4,7 @@ import type {
   FlipRecord,
   RecentFlipsResponse,
   StatsResponse,
-} from "@shared/types";
+} from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 

@@ -15,9 +15,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "paths": {}
   },
-  "include": ["src", "../shared"]
+  "include": ["src"]
 }
