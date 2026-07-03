@@ -9,7 +9,7 @@ An improved, portfolio-quality demo inspired by [Degen Coin Flip](https://degenc
 | **Frontend** | https://client-six-mocha-33.vercel.app |
 | **Backend API** | https://server-delta-tan-43.vercel.app |
 
-> **Note:** The API is deployed as Vercel serverless functions. Recent flips/stats are stored in-memory per instance and may reset on cold starts. A [Render](https://render.com) config (`server/render.yaml`) is included for a persistent Node process alternative.
+> **Note:** Because there are no real persistence, recent flips and stats ("Flips Recorded") are accumulated in a **client-side session store** and merged with API poll results, so counts won't drop when serverless instances rotate. The API runs on Vercel serverless.
 
 ## What We Built
 
