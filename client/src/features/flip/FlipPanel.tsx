@@ -4,6 +4,7 @@ import type { FlipSide } from "../../types";
 import { api } from "../../lib/api";
 import { simulateSigning } from "../../lib/mockTx";
 import { useWalletStore } from "../../state/walletStore";
+import { useFlipHistoryStore } from "../../state/flipHistoryStore";
 import {
   flipReducer,
   initialFlipContext,
@@ -17,6 +18,7 @@ const MIN_BET = 0.01;
 export function FlipPanel() {
   const queryClient = useQueryClient();
   const { connected, address, balance, deductBet, creditPayout } = useWalletStore();
+  const addFlip = useFlipHistoryStore((s) => s.addFlip);
   const [ctx, dispatch] = useReducer(flipReducer, initialFlipContext);
 
   const [selectedSide, setSelectedSide] = useState<FlipSide>("heads");
@@ -59,6 +61,7 @@ export function FlipPanel() {
           creditPayout(result.payout);
         }
         dispatch({ type: "SETTLED", result });
+        addFlip(result);
         queryClient.invalidateQueries({ queryKey: ["recentFlips"] });
         queryClient.invalidateQueries({ queryKey: ["stats"] });
       } else {
@@ -79,6 +82,7 @@ export function FlipPanel() {
     deductBet,
     creditPayout,
     queryClient,
+    addFlip,
   ]);
 
   const handleReset = () => dispatch({ type: "RESET" });
@@ -92,6 +96,7 @@ export function FlipPanel() {
         phase={ctx.phase}
         selectedSide={selectedSide}
         outcome={ctx.result?.outcome ?? null}
+        won={ctx.result?.won}
       />
 
       {ctx.phase === "settled" && ctx.result && (

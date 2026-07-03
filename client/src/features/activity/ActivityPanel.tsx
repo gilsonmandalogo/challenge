@@ -1,24 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { api } from "../../lib/api";
 import { truncateAddress } from "../../lib/mockTx";
+import { useFlipHistoryStore } from "../../state/flipHistoryStore";
 import { useWalletStore } from "../../state/walletStore";
 
 export function ActivityPanel() {
   const { address } = useWalletStore();
+  const mergeRemoteFlips = useFlipHistoryStore((s) => s.mergeRemoteFlips);
+  const getRecentFlips = useFlipHistoryStore((s) => s.getRecentFlips);
+  const getStats = useFlipHistoryStore((s) => s.getStats);
+  const flipsById = useFlipHistoryStore((s) => s.flipsById);
 
   const { data: recentData, isLoading: recentLoading } = useQuery({
     queryKey: ["recentFlips"],
     queryFn: () => api.getRecentFlips(20),
     refetchInterval: 5000,
+    placeholderData: (prev) => prev,
   });
 
-  const { data: stats } = useQuery({
-    queryKey: ["stats"],
-    queryFn: () => api.getStats(),
-    refetchInterval: 5000,
-  });
+  useEffect(() => {
+    if (recentData?.flips) {
+      mergeRemoteFlips(recentData.flips);
+    }
+  }, [recentData, mergeRemoteFlips]);
 
-  const sessionFlips = recentData?.flips.filter((f) => f.wallet === address) ?? [];
+  const recentFlips = getRecentFlips(20);
+  const stats = getStats();
+
+  const sessionFlips = recentFlips.filter((f) => f.wallet === address);
   const sessionPnL = sessionFlips.reduce(
     (sum, f) => sum + (f.won ? f.payout - f.amount : -f.amount),
     0
@@ -41,15 +51,21 @@ export function ActivityPanel() {
     }
   }
 
+  const hasFlips = Object.keys(flipsById).length > 0;
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Total Flips" value={String(stats?.totalFlips ?? 0)} />
+        <StatCard
+          label="Flips Recorded"
+          value={String(stats.totalFlips)}
+          hint="Session feed"
+        />
         <StatCard
           label="Biggest Win"
-          value={`${(stats?.biggestWin ?? 0).toFixed(2)} SOL`}
+          value={`${stats.biggestWin.toFixed(2)} SOL`}
         />
-        <StatCard label="Top Streak" value={String(stats?.topStreak ?? 0)} />
+        <StatCard label="Top Streak" value={String(stats.topStreak)} />
         <StatCard
           label="Session P&L"
           value={`${sessionPnL >= 0 ? "+" : ""}${sessionPnL.toFixed(4)} SOL`}
@@ -67,18 +83,21 @@ export function ActivityPanel() {
       )}
 
       <div className="rounded-2xl border border-border bg-surface p-4">
-        <h3 className="text-sm font-semibold text-slate-300 mb-3">Recent Plays</h3>
-        {recentLoading ? (
+        <h3 className="text-sm font-semibold text-slate-300 mb-1">Recent Plays</h3>
+        <p className="text-xs text-slate-500 mb-3">
+          Session feed — may include flips from other players when available
+        </p>
+        {recentLoading && !hasFlips ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="h-10 rounded-lg bg-surface-2 animate-pulse" />
             ))}
           </div>
-        ) : recentData?.flips.length === 0 ? (
+        ) : recentFlips.length === 0 ? (
           <p className="text-sm text-slate-500 text-center py-6">No flips yet — be the first!</p>
         ) : (
           <div className="space-y-1.5 max-h-80 overflow-y-auto">
-            {recentData?.flips.map((flip) => (
+            {recentFlips.map((flip) => (
               <div
                 key={flip.id}
                 className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
@@ -113,10 +132,12 @@ function StatCard({
   label,
   value,
   highlight,
+  hint,
 }: {
   label: string;
   value: string;
   highlight?: "green" | "red";
+  hint?: string;
 }) {
   return (
     <div className="rounded-xl bg-surface-2 border border-border px-4 py-3">
@@ -132,6 +153,7 @@ function StatCard({
       >
         {value}
       </p>
+      {hint && <p className="text-[10px] text-slate-600 mt-0.5">{hint}</p>}
     </div>
   );
 }
