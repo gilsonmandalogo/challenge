@@ -23,6 +23,7 @@ export function FlipPanel() {
 
   const [selectedSide, setSelectedSide] = useState<FlipSide>("heads");
   const [betAmount, setBetAmount] = useState("0.1");
+  const [bouncingPreset, setBouncingPreset] = useState<number | null>(null);
 
   const amount = parseFloat(betAmount);
   const isValidBet =
@@ -101,7 +102,7 @@ export function FlipPanel() {
 
       {ctx.phase === "settled" && ctx.result && (
         <div
-          className={`text-center mb-4 p-3 rounded-lg ${
+          className={`fade-slide-up text-center mb-4 p-3 rounded-lg ${
             ctx.result.won ? "bg-green/10 border border-green/30" : "bg-red/10 border border-red/30"
           }`}
         >
@@ -124,7 +125,7 @@ export function FlipPanel() {
       {ctx.phase === "settled" || ctx.phase === "failed" ? (
         <button
           onClick={handleReset}
-          className="w-full mt-4 rounded-xl bg-purple py-3 font-semibold text-white hover:bg-purple-light transition-colors"
+          className="btn-flip w-full mt-4 rounded-xl py-3 font-semibold text-white"
         >
           Flip Again
         </button>
@@ -136,11 +137,11 @@ export function FlipPanel() {
                 key={side}
                 onClick={() => setSelectedSide(side)}
                 disabled={isBusy}
-                className={`flex-1 rounded-xl py-3 font-semibold capitalize transition-all border-2 ${
+                className={`flex-1 rounded-xl py-3 font-semibold capitalize transition-all border-2 hover:scale-[1.02] active:scale-[0.97] ${
                   selectedSide === side
-                    ? "border-purple bg-purple/20 text-purple-light"
+                    ? "border-purple bg-purple/20 text-purple-light btn-select-pop"
                     : "border-border bg-surface-2 text-slate-400 hover:border-slate-500"
-                } disabled:opacity-50`}
+                } disabled:opacity-50 disabled:hover:scale-100`}
               >
                 {side}
               </button>
@@ -157,14 +158,20 @@ export function FlipPanel() {
                 value={betAmount}
                 onChange={(e) => setBetAmount(e.target.value)}
                 disabled={isBusy || !connected}
-                className="flex-1 rounded-lg bg-surface-2 border border-border px-4 py-2.5 text-white focus:outline-none focus:border-purple disabled:opacity-50"
+                className="flex-1 rounded-lg bg-surface-2 border border-border px-4 py-2.5 text-white focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/50 transition-shadow disabled:opacity-50"
               />
               {[0.1, 0.5, 1].map((preset) => (
                 <button
                   key={preset}
-                  onClick={() => setBetAmount(String(preset))}
+                  onClick={() => {
+                    setBetAmount(String(preset));
+                    setBouncingPreset(preset);
+                    setTimeout(() => setBouncingPreset(null), 250);
+                  }}
                   disabled={isBusy || !connected}
-                  className="rounded-lg bg-surface-2 border border-border px-3 py-2 text-xs text-slate-400 hover:text-white hover:border-purple transition-colors disabled:opacity-50"
+                  className={`rounded-lg bg-surface-2 border border-border px-3 py-2 text-xs text-slate-400 hover:text-white hover:border-purple hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all disabled:opacity-50 ${
+                    bouncingPreset === preset ? "tap-bounce" : ""
+                  }`}
                 >
                   {preset}
                 </button>
@@ -181,7 +188,9 @@ export function FlipPanel() {
           <button
             onClick={handleFlip}
             disabled={!isValidBet || isBusy}
-            className="w-full mt-6 rounded-xl bg-purple py-3.5 font-bold text-white text-lg hover:bg-purple-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className={`btn-flip w-full mt-6 rounded-xl py-3.5 font-bold text-white text-lg disabled:opacity-40 disabled:cursor-not-allowed ${
+              isBusy ? "btn-flip-busy" : ""
+            }`}
           >
             {isBusy
               ? ctx.phase === "signing"

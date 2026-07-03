@@ -19,7 +19,7 @@ export function WalletButton() {
           <span className="text-sm font-medium">{truncateAddress(address)}</span>
           <button
             onClick={disconnect}
-            className="ml-1 text-xs text-slate-400 hover:text-red transition-colors"
+            className="ml-1 text-xs text-slate-400 hover:text-red hover:underline transition-colors active:scale-95"
           >
             Disconnect
           </button>
@@ -32,7 +32,7 @@ export function WalletButton() {
     <button
       onClick={connect}
       disabled={connecting}
-      className="rounded-full bg-purple px-5 py-2 text-sm font-semibold text-white hover:bg-purple-light transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      className="btn-primary rounded-full px-5 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {connecting ? "Connecting..." : "Connect Wallet"}
     </button>

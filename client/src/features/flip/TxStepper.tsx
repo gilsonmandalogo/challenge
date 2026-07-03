@@ -12,9 +12,18 @@ export function TxStepper({ phase, error }: TxStepperProps) {
 
   if (phase === "idle") return null;
 
+  const progressPercent =
+    currentStep <= 1 ? 0 : ((currentStep - 1) / (STEPS.length - 1)) * 100;
+
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-2">
+      <div className="relative flex items-center justify-between mb-2">
+        <div className="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-border -z-0">
+          <div
+            className="h-full bg-purple transition-all duration-500 ease-out"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
         {STEPS.map((label, i) => {
           const stepNum = i + 1;
           const isActive = currentStep === stepNum;
@@ -22,15 +31,15 @@ export function TxStepper({ phase, error }: TxStepperProps) {
           const isFailed = phase === "failed" && isActive;
 
           return (
-            <div key={label} className="flex flex-col items-center flex-1">
+            <div key={label} className="relative z-10 flex flex-col items-center flex-1">
               <div
                 className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
                   isFailed
                     ? "border-red bg-red/20 text-red"
                     : isDone
-                      ? "border-green bg-green/20 text-green"
+                      ? "border-green bg-green/20 text-green step-pop"
                       : isActive
-                        ? "border-purple bg-purple/20 text-purple-light"
+                        ? "border-purple bg-purple/20 text-purple-light step-active-pulse"
                         : "border-border bg-surface-2 text-slate-500"
                 }`}
               >

@@ -17,31 +17,39 @@ export function FairnessDrawer({ result }: FairnessDrawerProps) {
         className="w-full flex items-center justify-between px-4 py-3 bg-surface-2 hover:bg-surface text-sm text-left transition-colors"
       >
         <span className="text-slate-300">Provably Fair (Demo)</span>
-        <span className="text-slate-500">{open ? "▲" : "▼"}</span>
+        <span
+          className={`text-slate-500 transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          ▼
+        </span>
       </button>
-      {open && (
-        <div className="px-4 py-3 bg-surface text-xs space-y-2 font-mono">
-          <div>
-            <span className="text-slate-500">Server Seed Hash: </span>
-            <span className="text-purple-light break-all">
-              {result.fairness.serverSeedHash}
-            </span>
-          </div>
-          {result.fairness.serverSeed && (
+      <div className={`drawer-content ${open ? "open" : ""}`}>
+        <div className="drawer-content-inner">
+          <div className="px-4 py-3 bg-surface text-xs space-y-2 font-mono">
             <div>
-              <span className="text-slate-500">Server Seed (revealed): </span>
-              <span className="text-green break-all">{result.fairness.serverSeed}</span>
+              <span className="text-slate-500">Server Seed Hash: </span>
+              <span className="text-purple-light break-all">
+                {result.fairness.serverSeedHash}
+              </span>
             </div>
-          )}
-          <div>
-            <span className="text-slate-500">Tx Signature: </span>
-            <span className="text-slate-400 break-all">{result.mockTxSignature.slice(0, 32)}...</span>
+            {result.fairness.serverSeed && (
+              <div>
+                <span className="text-slate-500">Server Seed (revealed): </span>
+                <span className="text-green break-all">{result.fairness.serverSeed}</span>
+              </div>
+            )}
+            <div>
+              <span className="text-slate-500">Tx Signature: </span>
+              <span className="text-slate-400 break-all">{result.mockTxSignature.slice(0, 32)}...</span>
+            </div>
+            <p className="text-slate-500 pt-1">
+              Demo only — production would use on-chain VRF (e.g. Chainlink) for verifiable randomness.
+            </p>
           </div>
-          <p className="text-slate-500 pt-1">
-            Demo only — production would use on-chain VRF (e.g. Chainlink) for verifiable randomness.
-          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
