@@ -6,7 +6,7 @@ import { generateId, hashSeed, randomSide, store } from "../store/memoryStore.js
 
 const MIN_BET = 0.01;
 const MAX_BET = 100;
-const CONFIRM_DELAY_MS = 1500;
+const CONFIRM_DELAY_MS = 1200;
 const pendingSeeds = new Map<string, string>();
 
 function delay(ms: number): Promise<void> {
